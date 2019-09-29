@@ -1,0 +1,55 @@
+version: '3.2'
+
+services: 
+  php-fpm-pay:
+    image: rocketfirmcom/php7.2-fpm-alpine
+    volumes:
+      - ./pay-system:/var/www
+    links:  
+      - mysql-pay
+  nginx-pay:
+    image: nginx:alpine
+    volumes:
+      - ./default.conf:/etc/nginx/conf.d/default.conf
+      - ./pay-system:/var/www
+    ports:
+      - "80:80"
+      - "443:443"
+    links:  
+      - php-fpm-pay
+  mysql-pay:
+    image: mysql:5.7
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=db_pay-system
+    volumes:
+      - ./database:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    command: ['mysqld', '--character-set-server=utf8mb4', '--collation-server=utf8mb4_general_ci']
+  php-fpm-acceptance:
+    image: rocketfirmcom/php7.2-fpm-alpine
+    volumes:
+      - ./acceptance-system:/var/www
+    links:  
+      - mysql-acceptance
+  nginx-acceptance:
+    image: nginx:alpine
+    volumes:
+      - ./default-acceptance.conf:/etc/nginx/conf.d/default.conf
+      - ./acceptance-system:/var/www
+    ports:
+      - "81:80"
+      - "444:443"
+    links:  
+      - php-fpm-acceptance
+  mysql-acceptance:
+    image: mysql:5.7
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=db_acceptance-system
+    volumes:
+      - ./database2:/var/lib/mysql
+    ports:
+      - "3307:3306"
+    command: ['mysqld', '--character-set-server=utf8mb4', '--collation-server=utf8mb4_general_ci']
