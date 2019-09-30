@@ -24,9 +24,8 @@ root - root
 
 ## Process
 
-в pay-system php fpm 
+в pay-system php fpm   
 `php yii transaction/send-transaction`
 
-в acceptance-system php fpm    
-Запустить listener очередей  
+в acceptance-system php fpm запустить listener очередей  
 `php yii worker`
