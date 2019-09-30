@@ -26,8 +26,21 @@ $config = [
             ],
         ],
         'db' => $db,
+        'beanstalk'=>[
+            'class' => 'udokmeci\yii2beanstalk\Beanstalk',
+            'host' => 'beanstalkd',
+            'port' => 11300,
+            'connectTimeout' => 1,
+            'sleep' => false,
+        ],
     ],
     'params' => $params,
+    'controllerMap' => [
+        'worker'=>[
+            'class' => 'app\commands\workers\WorkerController',
+        ]
+
+    ],
     /*
     'controllerMap' => [
         'fixture' => [ // Fixture generation command line.

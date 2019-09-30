@@ -26,20 +26,22 @@ class TransactionController extends Controller
     {
         $client = new Client();
         $key = KeyHelper::getKey();
-        $transactions = json_encode($this->transactionRepository->generateTransactions());
-        var_dump($transactions);die;
-        $response = $client->post('http://localhost:81/api/transactions', [
-            'json' => [
-                'key' => $key,
-                'transactions' => $transactions,
-            ],
-        ]);
+        $counter = 0;
 
-        var_dump((string)$response);die;
-        // while (true) {
-           
-        //     sleep(20);
-        // }
+         while (true) {
+             $transactions = json_encode($this->transactionRepository->generateTransactions());
+             $response = $client->post('http://nginx-acceptance/api/transactions', [
+                 'json' => [
+                     'key' => $key,
+                     'transactions' => $transactions,
+                 ],
+             ]);
 
+             if ($response->getStatusCode() == 200){
+                 $counter++;
+                 echo "$counter \n";
+             }
+             sleep(20);
+         }
     }
 }

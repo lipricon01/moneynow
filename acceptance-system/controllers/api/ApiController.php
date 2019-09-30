@@ -57,20 +57,20 @@ class ApiController extends Controller
 
     public function actionTransactions()
     {
-        $request = Json::decode(Yii::$app->request->getRawBody());
 
+        $request = Json::decode(Yii::$app->request->getRawBody());
         if (!isset($request['key']) || !$this->keyService->checkKey($request['key'])) {
             throw new ForbiddenHttpException('Wrong key');
 
         }
         if (isset($request['transactions'])) {
-            $transactions = $request['transactions'];
-            return $transactions;
-            if ($this->transactionService->saveTransactions()) {
-                return true;
-            }
+            $transactions = json_decode($request['transactions']);
+            Yii::$app->beanstalk->putInTube('tube', $transactions);
+
+
+        } else {
+            throw new UnprocessableEntityHttpException('No transactions send');
         }
 
-        throw new UnprocessableEntityHttpException('No transactions send');
     }
 }

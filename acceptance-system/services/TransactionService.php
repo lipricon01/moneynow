@@ -4,7 +4,6 @@ namespace app\services;
 
 use app\modules\transactions\models\Transactions;
 use app\modules\userWallet\models\UserWallet;
-use function Couchbase\defaultDecoder;
 use Yii;
 
 class TransactionService
@@ -15,9 +14,9 @@ class TransactionService
         try {
             foreach ($transactions as $index => $transaction) {
                 $transactionModel = new Transactions();
-                $transactionModel->summ = $transaction['summ'] + $transaction['summ'] * ($transaction['commission'] / 10);
-                $transactionModel->user_id = $transaction['order_number'];
-                $transactionModel->transaction_id = $transaction['id'];
+                $transactionModel->summ = $transaction->summ + $transaction->summ * ($transaction->commission / 10);
+                $transactionModel->user_id = $transaction->order_number;
+                $transactionModel->transaction_id = $transaction->id;
                 if ($transactionModel->save()) {
                     $this->updateOrCreateUserWallet($transactionModel);
                 }

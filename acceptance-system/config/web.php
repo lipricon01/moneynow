@@ -57,6 +57,13 @@ $config = [
                 'api/<action>' => 'api/api/<action>'
             ],
         ],
+        'beanstalk'=>[
+            'class' => 'udokmeci\yii2beanstalk\Beanstalk',
+            'host' => 'beanstalkd',
+            'port' => 11300,
+            'connectTimeout' => 1,
+            'sleep' => false,
+        ],
         
     ],
     'params' => $params,
