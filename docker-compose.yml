@@ -1,11 +1,11 @@
 version: '3.2'
 
-services: 
+services:
   php-fpm-pay:
     image: rocketfirmcom/php7.2-fpm-alpine
     volumes:
       - ./pay-system:/var/www
-    links:  
+    links:
       - mysql-pay
   nginx-pay:
     image: nginx:alpine
@@ -15,7 +15,7 @@ services:
     ports:
       - "80:80"
       - "443:443"
-    links:  
+    links:
       - php-fpm-pay
   mysql-pay:
     image: mysql:5.7
@@ -31,7 +31,7 @@ services:
     image: rocketfirmcom/php7.2-fpm-alpine
     volumes:
       - ./acceptance-system:/var/www
-    links:  
+    links:
       - mysql-acceptance
   nginx-acceptance:
     image: nginx:alpine
@@ -41,7 +41,7 @@ services:
     ports:
       - "81:80"
       - "444:443"
-    links:  
+    links:
       - php-fpm-acceptance
   mysql-acceptance:
     image: mysql:5.7
@@ -53,3 +53,8 @@ services:
     ports:
       - "3307:3306"
     command: ['mysqld', '--character-set-server=utf8mb4', '--collation-server=utf8mb4_general_ci']
+  beanstalkd:
+    image: schickling/beanstalkd:latest
+    restart: always
+    ports:
+      - "11300:11300"
