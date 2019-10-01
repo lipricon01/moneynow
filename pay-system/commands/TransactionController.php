@@ -4,6 +4,7 @@ namespace app\commands;
 
 use app\repositories\TransactionsRepository;
 use GuzzleHttp\Client;
+use GuzzleHttp\RequestOptions;
 use yii\console\Controller;
 use app\helpers\KeyHelper;
 
@@ -25,23 +26,22 @@ class TransactionController extends Controller
     public function actionSendTransaction()
     {
         $client = new Client();
-        $key = KeyHelper::getKey();
         $counter = 0;
+        while (true) {
+            $transactions = ($this->transactionRepository->generateTransactions());
+            $signature = KeyHelper::getSignature($transactions);
+            $response = $client->post('http://nginx-acceptance/api/transactions', [
+                RequestOptions::JSON => [
+                    'signature' => $signature,
+                    'transactions' => $transactions,
+                ],
+            ]);
 
-         while (true) {
-             $transactions = json_encode($this->transactionRepository->generateTransactions());
-             $response = $client->post('http://nginx-acceptance/api/transactions', [
-                 'json' => [
-                     'key' => $key,
-                     'transactions' => $transactions,
-                 ],
-             ]);
-
-             if ($response->getStatusCode() == 200){
-                 $counter++;
-                 echo "$counter \n";
-             }
-             sleep(20);
-         }
+            if ($response->getStatusCode() == 200) {
+                $counter++;
+                echo "$counter \n";
+            }
+            sleep(20);
+        }
     }
 }
