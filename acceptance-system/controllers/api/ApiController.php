@@ -59,7 +59,7 @@ class ApiController extends Controller
             throw new \Exception('No transactions or signature');
         }
 
-        if($this->keyService->checkKey($request->signature, $request->transactions) == 1){
+        if($this->keyService->checkKey($request->signature, $request->transactions) == true){
             Yii::$app->beanstalk->putInTube('tube', $request->transactions);
         };
     }
