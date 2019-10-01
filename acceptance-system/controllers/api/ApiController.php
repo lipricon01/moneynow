@@ -6,15 +6,11 @@ namespace app\controllers\api;
 
 use app\services\KeyService;
 use app\services\TransactionService;
-use function Couchbase\defaultDecoder;
 use Yii;
 use yii\filters\ContentNegotiator;
 use yii\filters\Cors;
-use yii\helpers\Json;
 use yii\rest\Controller;
-use yii\web\ForbiddenHttpException;
 use yii\web\Response;
-use yii\web\UnprocessableEntityHttpException;
 
 class ApiController extends Controller
 {
@@ -52,25 +48,19 @@ class ApiController extends Controller
                 'application/json' => Response::FORMAT_JSON,
             ],
         ];
+
         return $behaviors;
     }
 
     public function actionTransactions()
     {
-
-        $request = Json::decode(Yii::$app->request->getRawBody());
-        if (!isset($request['key']) || !$this->keyService->checkKey($request['key'])) {
-            throw new ForbiddenHttpException('Wrong key');
-
-        }
-        if (isset($request['transactions'])) {
-            $transactions = json_decode($request['transactions']);
-            Yii::$app->beanstalk->putInTube('tube', $transactions);
-
-
-        } else {
-            throw new UnprocessableEntityHttpException('No transactions send');
+        $request = json_decode(Yii::$app->request->getRawBody());
+        if (!isset($request->signature) || !isset($request->transactions)) {
+            throw new \Exception('No transactions or signature');
         }
 
+        if($this->keyService->checkKey($request->signature, $request->transactions) == true){
+            Yii::$app->beanstalk->putInTube('tube', $request->transactions);
+        };
     }
 }
